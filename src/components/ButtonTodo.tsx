@@ -7,12 +7,13 @@ const ButtonTask = () => {
 	const [tasks, setTasks] = useState('');
 	const queryClient = useQueryClient();
 	const [open, setOpen] = useState(false);
+	const [category, setCategory] = useState('');
 
 	const {mutateAsync} = useMutation({
 		mutationFn: (task: string) => {
 			return axios.post(import.meta.env.VITE_REACT_API_URL + '/post', {
 				title: task,
-				categoryId: '65de7f37275096db89804802'
+				categoryId: category
 			});
 		},
 		onSuccess: () => {
@@ -56,7 +57,11 @@ const ButtonTask = () => {
 						onChange={(e) => setTasks(e.target.value)}
 					/>
 
-					<select className='w-full border border-slate-800 p-2 rounded-lg mt-4 outline-none'>
+					<select
+						className='w-full border border-slate-800 p-2 rounded-lg mt-4 outline-none'
+						value={category}
+						onChange={(e) => setCategory(e.target.value)}
+					>
 						<option>Selecione uma categoria</option>
 						{data?.map((item: any) => (
 							<option key={item.id} value={item.id}>
