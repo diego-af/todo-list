@@ -12,6 +12,7 @@ const List = () => {
 	const [open, setOpen] = useState(false);
 	const [item, setItem] = useState<IItemProps>({} as IItemProps);
 	const [load, setLoad] = useState(false);
+	const [deleteTask, setDeleteTask] = useState(false);
 	const queryClient = useQueryClient();
 	const getTodo = async () => {
 		const response = await axios.get(
@@ -29,12 +30,18 @@ const List = () => {
 	const {mutateAsync} = useMutation({
 		mutationFn: (item: IItemProps) => {
 			setLoad(true);
-			return axios.put(
-				import.meta.env.VITE_REACT_API_URL + `/post/${item.id}`,
-				{
-					title: item.title,
-					completed: !item.completed
-				}
+
+			if (!deleteTask) {
+				return axios.put(
+					import.meta.env.VITE_REACT_API_URL + `/post/${item.id}`,
+					{
+						title: item.title,
+						completed: !item.completed
+					}
+				);
+			}
+			return axios.delete(
+				import.meta.env.VITE_REACT_API_URL + `/post/${item.id}`
 			);
 		},
 		onSuccess: () => {
@@ -48,7 +55,14 @@ const List = () => {
 	if (isLoading) {
 		return <Loading />;
 	}
-	console.log(data);
+	if (data.length === 0) {
+		return (
+			<div className='w-full text-center text-zinc-300 text-2xl'>
+				Nenhuma tarefa criada
+			</div>
+		);
+	}
+
 	return (
 		<main className='w-full flex flex-col '>
 			<ul className='grid grid-cols-2 md:grid-cols-3 gap-2 p-2'>
@@ -92,9 +106,10 @@ const List = () => {
 						<div className='w-full flex justify-between mt-4'>
 							<Dialog.Close asChild>
 								<button
-									className='bg-trasparent w-[150px] h-4 rounded-lg p-4 text-zinc-700 flex justify-center items-center border border-red-400'
+									className='bg-transparent w-[150px] h-4 rounded-lg p-4 text-zinc-700 flex justify-center items-center border border-red-400'
 									onClick={() => {
 										mutateAsync(item);
+										setDeleteTask(true);
 									}}
 								>
 									Excluir
@@ -108,6 +123,7 @@ const List = () => {
 								disabled={load}
 								onClick={() => {
 									mutateAsync(item);
+									setDeleteTask(false);
 								}}
 							>
 								{item?.completed ? 'Desmarcar' : 'Marcar como feito'}
