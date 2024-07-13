@@ -11,3 +11,11 @@ export type IItemProps = {
 		updatedAt: string;
 	};
 };
+export interface EditState {
+	editing: boolean;
+	value: string;
+}
+
+export interface EditStates {
+	[key: string]: EditState;
+}

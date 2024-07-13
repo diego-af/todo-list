@@ -1,39 +1,16 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+
 import {useState} from 'react';
-import axios from 'axios';
+
+import {useQueryCategories} from '../functions/hooks/querys/useQueryCategories';
+import {useMutationPost} from '../functions/hooks/mutations/mutationPost';
 
 const ButtonTask = () => {
 	const [tasks, setTasks] = useState('');
-	const queryClient = useQueryClient();
 	const [open, setOpen] = useState(false);
 	const [category, setCategory] = useState('');
-
-	const {mutateAsync} = useMutation({
-		mutationFn: (task: string) => {
-			return axios.post(import.meta.env.VITE_REACT_API_URL + '/post', {
-				title: task,
-				categoryId: category
-			});
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({queryKey: ['list']});
-			setTasks('');
-			setOpen(false);
-		}
-	});
-	const getCategory = async () => {
-		const response = await axios.get(
-			import.meta.env.VITE_REACT_API_URL + '/categories'
-		);
-
-		return response.data.data;
-	};
-	const {data} = useQuery({
-		queryKey: ['categories'],
-		queryFn: getCategory,
-		refetchOnWindowFocus: true
-	});
+	const {mutateAsync} = useMutationPost({category, setTasks, setOpen});
+	const {data} = useQueryCategories();
 
 	return (
 		<Dialog.Root open={open} onOpenChange={setOpen}>

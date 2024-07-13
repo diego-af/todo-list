@@ -4,7 +4,7 @@ const Header = () => {
 	return (
 		<header className='w-full flex justify-between text-2xl text-zinc-300 '>
 			{' '}
-			Minha todo list
+			Todo list
 			<Avatar.Root className=''>
 				<Avatar.Image
 					className='w-10 h-10 rounded-full'
